@@ -1,0 +1,4 @@
+aiogram
+sqlalchemy
+watchdog
+loguru
