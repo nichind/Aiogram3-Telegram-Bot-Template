@@ -7,7 +7,7 @@ from bot import create_dp
 from loguru import logger
 
 
-print(f'\n\n{"="*90}\nBot Template made by @nichind, https://github.com/nichind/Python-Telegram-Bot-Template')
+print(f'\n\n{"="*90}\nBot Template made by @nichind, https://github.com/nichind/Aiogram3-Telegram-Bot-Template')
 print(f'Donate $TON: UQDyPKaSUOIPnWVdxRQhk0tEZaSG6cQcOfZVdAnPqlI-T8Ot')
 print(f'My telegram channel: https://t.me/nichindpf\n{"="*90}\n')
 # don't edit this lines ^-^ or I will find you :D
