@@ -3,6 +3,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Boolean, Float, J
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from time import time
+from typing import Self, List
 
 engine = create_engine('sqlite:///./bot.sqlite?check_same_thread=False', pool_size=10, max_overflow=30)
 Base = declarative_base()
@@ -10,7 +11,7 @@ Base = declarative_base()
 
 class Session(sessionmaker):
     def __new__(cls):
-        """Session generator for database operations"""
+        """Session generator for database operations. Should be closed with `.close()` after usage"""
         return (sessionmaker(bind=engine))()
 
 
@@ -39,7 +40,7 @@ class User(Base):
 
     @classmethod
     async def add(cls, user_obj: types.User, **kwargs) -> bool:
-        """Add User object to database"""
+        """Add User object to database. Will fail if user with this id already exists"""
         session = Session()
         user = session.query(User).filter_by(user_id=user_obj.id).first()
         if user is not None:
@@ -59,7 +60,7 @@ class User(Base):
         return True
 
     @classmethod
-    async def get(cls, user_obj=None, user_id: int = None, **kwargs):
+    async def get(cls, user_obj=None, user_id: int = None, **kwargs) -> Self:
         """Get User object from database"""
         if user_obj is not None:
             await cls.add(user_obj)
@@ -69,14 +70,14 @@ class User(Base):
         return user
 
     @classmethod
-    async def get_all(cls, **kwargs) -> list:
+    async def get_all(cls, **kwargs) -> List[Self]:
         """Get all User objects from database"""
         session = Session()
         users = session.query(User).filter_by(**kwargs).all()
         return users
 
     @classmethod
-    async def update(cls, user_id: int, **kwargs):
+    async def update(cls, user_id: int, **kwargs) -> Self:
         """Update User object in database"""
         session = Session()
         user = session.query(User).filter_by(user_id=user_id).first()
@@ -85,7 +86,8 @@ class User(Base):
         setattr(user, 'edit_at', time())
         session.commit()
         session.close()
-        return user
+        return await cls.get(user_id=user_id)
 
 
+# Create tables
 Base.metadata.create_all(engine)

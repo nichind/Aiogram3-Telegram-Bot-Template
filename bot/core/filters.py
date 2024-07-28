@@ -6,6 +6,7 @@ from time import time
 
 
 class IsAdmin(Filter):
+    """Check if user is admin. Returns True if user is admin"""
     def __init__(self):
         pass
 
@@ -21,6 +22,7 @@ class IsAdmin(Filter):
 
 
 class UpdateUser(Filter):
+    """Filter used to keep new user data about in the database. Returns True and updates user data"""
     def __init__(self, bot_id: int):
         self.bot_id = bot_id
 

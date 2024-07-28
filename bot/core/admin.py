@@ -89,7 +89,7 @@ Total: <code>{stats_dict['bots'][bot_id]['total']}</code>, Blocked: <code>{stats
 New users: <code>{stats_dict['bots'][bot_id]['new']['month']}</code>, <code>{stats_dict['bots'][bot_id]['new']['week']}</code>, <code>{stats_dict['bots'][bot_id]['new']['day']}</code>, <code>{stats_dict['bots'][bot_id]['new']['hour']}</code>
 Active users: <code>{stats_dict['bots'][bot_id]['active']['month']}</code>, <code>{stats_dict['bots'][bot_id]['active']['week']}</code>, <code>{stats_dict['bots'][bot_id]['active']['day']}</code>, <code>{stats_dict['bots'][bot_id]['active']['hour']}</code>
 """
-        await message.answer(stats_text)
+        await self.bot.send_message(message.from_user.id, stats_text)
 
     def setup(self, dp: Dispatcher):
         dp.message.register(self.stats, IsAdmin(), UpdateUser(self.bot_id), StateFilter(None), Command('stats'))
