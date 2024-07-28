@@ -1,11 +1,9 @@
 from aiogram import types, Bot, Dispatcher
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
-from .database import *
 from aiogram.filters import *
 from .filters import *
 from json import load
-from .translator import translate as t
 
 
 class CurrentInst:

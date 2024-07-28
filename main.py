@@ -7,9 +7,9 @@ from bot import create_dp
 from loguru import logger
 
 
-print(f'\n\n{"="*60}\nBot Template made by @nichind, https://github.com/nichind/Python-Telegram-Bot-Template')
+print(f'\n\n{"="*90}\nBot Template made by @nichind, https://github.com/nichind/Python-Telegram-Bot-Template')
 print(f'Donate $TON: UQDyPKaSUOIPnWVdxRQhk0tEZaSG6cQcOfZVdAnPqlI-T8Ot')
-print(f'My telegram channel: https://t.me/nichindpf\n{"="*60}\n')
+print(f'My telegram channel: https://t.me/nichindpf\n{"="*90}\n')
 # don't edit this lines ^-^ or I will find you :D
 
 
@@ -23,7 +23,7 @@ async def run_bots(bots: Bots()):
     try:
         tokens = load(open('./config.json', 'r', encoding='utf-8'))['bots']
     except decoder.JSONDecodeError:
-        return logger.error('Invalid config.json, please check it and try again')
+        return logger.error('Invalid config.json, please fix it and try again')
     for token in tokens:
         if token not in bots.running:
             logger.info(f'Trying to start bot with id {token.split(":")[0]}')

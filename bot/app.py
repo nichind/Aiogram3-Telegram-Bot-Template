@@ -16,16 +16,15 @@ async def create_dp(token: str):
     try:
         bot = Bot(token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     except TokenValidationError:
-        logger.error(f"Invalid token: {token}")
-        return
+        return logger.error(f"Invalid token: {token}")
     dp = Dispatcher(storage=MemoryStorage())
     await bot.set_my_commands([
         BotCommand(command='start', description='Start the bot.'),
     ])
 
     Admin(bot).setup(dp)
-    # Messages(bot_id).setup(dp)
-    # Callbacks(bot_id).setup(dp)
+    Messages(bot).setup(dp)
+    # Callbacks(bot).setup(dp)
     # dp.setup_middleware(ThrottlingMiddleware())
     # dp.setup_middleware(IsSubbed())
 
