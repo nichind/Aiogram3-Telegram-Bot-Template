@@ -12,6 +12,7 @@ from aiogram import exceptions
 class SendStates(StatesGroup):
     wait_for_message = State()
     confirmation = State()
+    wait_for_url = State()
 
 
 class CurrentInst:
@@ -112,7 +113,8 @@ Active users: <code>{stats_dict['bots'][bot_id]['active']['month']}</code>, <cod
         await state.set_state(None)
         keyboard = [
             [InlineKeyboardButton(text="✅ Send", callback_data='send:yes')],
-            [InlineKeyboardButton(text="🗑️ No", callback_data='send:no')]
+            [InlineKeyboardButton(text="🗑️ No", callback_data='send:no')],
+            [InlineKeyboardButton(text="➕ Add URL button", callback_data='send:add_url')]
         ]
         markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
         text = "Are you sure you want to send this message to all users?"
@@ -122,6 +124,7 @@ Active users: <code>{stats_dict['bots'][bot_id]['active']['month']}</code>, <cod
     async def send_callback(self, call: CallbackQuery, state: FSMContext):
         answer_id = (await state.get_data())['answer_id']
         action = call.data[5:]
+        await state.set_state(None)
         if action == 'yes':
             await call.message.delete()
 
@@ -132,6 +135,7 @@ Active users: <code>{stats_dict['bots'][bot_id]['active']['month']}</code>, <cod
             caption = copy.caption if copy.caption else None
             sticker = copy.sticker if copy.sticker else None
             voice = copy.voice if copy.voice else None
+            markup = (await state.get_data())['markup'] if (await state.get_data()).get('markup') else None
 
             users = await User.get_all()
             bots = {}
@@ -158,15 +162,15 @@ Active users: <code>{stats_dict['bots'][bot_id]['active']['month']}</code>, <cod
                 # send message
                 try:
                     if photo:
-                        await bot.send_photo(user.user_id, photo.file_id, caption=caption)
+                        await bot.send_photo(user.user_id, photo.file_id, caption=caption, reply_markup=markup)
                     elif document:
-                        await bot.send_document(user.user_id, document.file_id, caption=caption)
+                        await bot.send_document(user.user_id, document.file_id, caption=caption, reply_markup=markup)
                     elif text:
-                        await bot.send_message(user.user_id, text)
+                        await bot.send_message(user.user_id, text, reply_markup=markup)
                     elif sticker:
-                        await bot.send_sticker(user.user_id, sticker.file_id)
+                        await bot.send_sticker(user.user_id, sticker.file_id, reply_markup=markup)
                     elif voice:
-                        await bot.send_voice(user.user_id, voice.file_id)
+                        await bot.send_voice(user.user_id, voice.file_id, caption=caption)
                     success += 1
                 except exceptions.TelegramForbiddenError:
                     await User.update(user.user_id, blocked_bot=True)
@@ -184,9 +188,39 @@ Active users: <code>{stats_dict['bots'][bot_id]['active']['month']}</code>, <cod
         elif action == 'no':
             await self.bot.delete_message(call.from_user.id, call.message.message_id)
 
+        elif action == 'add_url':
+            await state.set_state(SendStates.wait_for_url)
+            text = f"Send URL you want to send to all users.\n\nFormat: <code>button label;url</code>"
+            await call.message.edit_text(text)
+
+    async def send_url(self, message: types.Message, state: FSMContext):
+        if message.text.count(';') != 1:
+            return await message.delete()
+        label, url = message.text.split(';')
+
+        keyboard = [
+            [InlineKeyboardButton(text=label, url=url)]
+        ]
+        markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
+
+        await state.update_data(markup=markup)
+
+        keyboard = [
+            [InlineKeyboardButton(text="✅ Send", callback_data='send:yes')],
+            [InlineKeyboardButton(text="🗑️ No", callback_data='send:no')],
+            [InlineKeyboardButton(text=label, url=url)],
+            [InlineKeyboardButton(text="🗑️ Replace url button", callback_data='send:add_url')]
+        ]
+        markup = InlineKeyboardMarkup(inline_keyboard=keyboard)
+        text = "Are you sure you want to send this message to all users?"
+        answer = await self.bot.send_message(message.from_user.id, text, reply_markup=markup)
+        await message.delete()
+        await state.set_state(None)
+
     def setup(self, dp: Dispatcher):
         dp.message.register(self.stats, IsAdmin(), UpdateUser(self.bot_id), StateFilter(None), Command('stats'))
         dp.message.register(self.send, IsAdmin(), UpdateUser(self.bot_id), StateFilter(None), Command('send'))
         dp.message.register(self.send_message, IsAdmin(), UpdateUser(self.bot_id),
                             StateFilter(SendStates.wait_for_message))
         dp.callback_query.register(self.send_callback, IsAdmin(), UpdateUser(self.bot_id), F.data[:5] == 'send:')
+        dp.message.register(self.send_url, IsAdmin(), UpdateUser(self.bot_id), StateFilter(SendStates.wait_for_url))
