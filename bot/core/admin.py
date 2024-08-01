@@ -11,7 +11,6 @@ from aiogram import exceptions
 
 class SendStates(StatesGroup):
     wait_for_message = State()
-    confirmation = State()
     wait_for_url = State()
 
 
@@ -218,9 +217,9 @@ Active users: <code>{stats_dict['bots'][bot_id]['active']['month']}</code>, <cod
         await state.set_state(None)
 
     def setup(self, dp: Dispatcher):
-        dp.message.register(self.stats, IsAdmin(), UpdateUser(self.bot_id), StateFilter(None), Command('stats'))
-        dp.message.register(self.send, IsAdmin(), UpdateUser(self.bot_id), StateFilter(None), Command('send'))
-        dp.message.register(self.send_message, IsAdmin(), UpdateUser(self.bot_id),
+        dp.message.register(self.stats, IsAdmin(), UpdateUser(), StateFilter(None), Command('stats'))
+        dp.message.register(self.send, IsAdmin(), UpdateUser(), StateFilter(None), Command('send'))
+        dp.message.register(self.send_message, IsAdmin(), UpdateUser(),
                             StateFilter(SendStates.wait_for_message))
-        dp.callback_query.register(self.send_callback, IsAdmin(), UpdateUser(self.bot_id), F.data[:5] == 'send:')
-        dp.message.register(self.send_url, IsAdmin(), UpdateUser(self.bot_id), StateFilter(SendStates.wait_for_url))
+        dp.callback_query.register(self.send_callback, IsAdmin(), UpdateUser(), F.data[:5] == 'send:')
+        dp.message.register(self.send_url, IsAdmin(), UpdateUser(), StateFilter(SendStates.wait_for_url))

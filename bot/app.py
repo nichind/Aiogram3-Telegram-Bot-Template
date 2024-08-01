@@ -24,6 +24,7 @@ async def create_dp(token: str):
 
     Admin(bot).setup(dp)
     Messages(bot).setup(dp)
+    GroupMessages(bot).setup(dp)
     # Callbacks(bot).setup(dp)
     # dp.setup_middleware(ThrottlingMiddleware())
     # dp.setup_middleware(IsSubbed())
