@@ -217,9 +217,9 @@ Active users: <code>{stats_dict['bots'][bot_id]['active']['month']}</code>, <cod
         await state.set_state(None)
 
     def setup(self, dp: Dispatcher):
-        dp.message.register(self.stats, IsAdmin(), UpdateUser(), StateFilter(None), Command('stats'))
-        dp.message.register(self.send, IsAdmin(), UpdateUser(), StateFilter(None), Command('send'))
-        dp.message.register(self.send_message, IsAdmin(), UpdateUser(),
+        dp.message.register(self.stats, IsAdmin(), UpdateUser(), IsPrivate(), StateFilter(None), Command('stats'))
+        dp.message.register(self.send, IsAdmin(), UpdateUser(), IsPrivate(), StateFilter(None), Command('send'))
+        dp.message.register(self.send_message, IsAdmin(), UpdateUser(), IsPrivate(),
                             StateFilter(SendStates.wait_for_message))
-        dp.callback_query.register(self.send_callback, IsAdmin(), UpdateUser(), F.data[:5] == 'send:')
-        dp.message.register(self.send_url, IsAdmin(), UpdateUser(), StateFilter(SendStates.wait_for_url))
+        dp.callback_query.register(self.send_callback, IsAdmin(), UpdateUser(), IsPrivate(), F.data[:5] == 'send:')
+        dp.message.register(self.send_url, IsAdmin(), UpdateUser(), IsPrivate(), StateFilter(SendStates.wait_for_url))

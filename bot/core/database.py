@@ -6,7 +6,7 @@ from time import time
 from typing import Self, List
 
 # Feel free to change this to postgresql or any other database.
-engine = create_engine('sqlite:///./bot.sqlite?check_same_thread=False', pool_size=10, max_overflow=30)
+engine = create_engine('sqlite:///./bot.sqlite?check_same_thread=False', pool_size=20, max_overflow=50)
 Base = declarative_base()
 
 

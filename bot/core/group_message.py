@@ -15,8 +15,8 @@ class CurrentInst:
     async def start(self, message: types.Message, state: FSMContext):
         user = await User.get(user_obj=message.from_user, user_id=message.from_user.id)
         group = await Group.get(group_obj=message.chat, group_id=message.chat.id)
-        print(message.chat)
-        await self.bot.send_message(message.chat.id, tr(user.language, "TEXT_START_GROUP"))
+        await self.bot.send_message(message.chat.id, tr(user.language, "TEXT_START_GROUP"),
+                                    reply_to_message_id=message.message_id)
 
     def setup(self, dp: Dispatcher):
-        dp.message.register(self.start, UpdateUser(), IsGroup(), Command('start'), UpdateGroup())
+        dp.message.register(self.start, UpdateUser(), IsGroup(), UpdateGroup(), Command('start'))
