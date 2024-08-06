@@ -73,8 +73,6 @@ class CurrentInst:
                         stats_dict['active']['day'] += 1
                         if user.active_at >= time() - 60 * 60:
                             stats_dict['active']['hour'] += 1
-            if user.blocked_bot:
-                stats_dict['blocked'] += 1
             if user.joined_at >= time() - 60 * 60 * 24 * 30:
                 stats_dict['new']['month'] += 1
                 if user.joined_at >= time() - 60 * 60 * 24 * 7:
@@ -229,6 +227,7 @@ Active users: <code>{stats_dict['bots'][bot_id]['active']['month']}</code>, <cod
             buffers[x] = BytesIO()
             buffers[x].write(f"\n".encode('utf-8'))
 
+        # write users
         for user in users:
             try:
                 buffers[str(user.current_bot)].write(f"{user.user_id}\n".encode('utf-8'))
@@ -247,6 +246,6 @@ Active users: <code>{stats_dict['bots'][bot_id]['active']['month']}</code>, <cod
         dp.message.register(self.send, IsAdmin(), UpdateUser(), IsPrivate(), StateFilter(None), Command('send'))
         dp.message.register(self.send_message, IsAdmin(), UpdateUser(), IsPrivate(),
                             StateFilter(SendStates.wait_for_message))
-        dp.callback_query.register(self.send_callback, IsAdmin(), UpdateUser(), IsPrivate(), F.data[:5] == 'send:')
+        dp.callback_query.register(self.send_callback, IsAdmin(), UpdateUser(), F.data[:5] == 'send:')
         dp.message.register(self.send_url, IsAdmin(), UpdateUser(), IsPrivate(), StateFilter(SendStates.wait_for_url))
         dp.message.register(self.dump_users_to_txt, IsAdmin(), UpdateUser(), IsPrivate(), Command('dump'))
