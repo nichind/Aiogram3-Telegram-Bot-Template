@@ -1,5 +1,5 @@
 from aiogram import types, Bot, Dispatcher, F
-from aiogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, BufferedInputFile
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import *
 from .filters import *
@@ -7,6 +7,7 @@ from json import load
 from asyncio import run
 from aiogram.fsm.state import State, StatesGroup
 from aiogram import exceptions
+from io import BytesIO
 
 
 class SendStates(StatesGroup):
@@ -216,6 +217,31 @@ Active users: <code>{stats_dict['bots'][bot_id]['active']['month']}</code>, <cod
         await message.delete()
         await state.set_state(None)
 
+    async def dump_users_to_txt(self, message: types.Message, state: FSMContext):
+        users = await User.get_all()
+        # create file in buffer
+
+        with open('./config.json') as cfg:
+            ids = [x.split(':')[0] for x in load(cfg)['bots']]
+
+        buffers = {}
+        for x in ids:
+            buffers[x] = BytesIO()
+            buffers[x].write(f"\n".encode('utf-8'))
+
+        for user in users:
+            try:
+                buffers[str(user.current_bot)].write(f"{user.user_id}\n".encode('utf-8'))
+            except KeyError:
+                pass
+
+        # send file(s) to admin
+        for buffer in buffers.keys():
+            buffers[buffer].seek(0)
+            await self.bot.send_document(message.from_user.id, BufferedInputFile(buffers[buffer].read(),
+                                                                                 filename=f'users-{buffer}.txt'))
+            buffers[buffer].close()
+
     def setup(self, dp: Dispatcher):
         dp.message.register(self.stats, IsAdmin(), UpdateUser(), IsPrivate(), StateFilter(None), Command('stats'))
         dp.message.register(self.send, IsAdmin(), UpdateUser(), IsPrivate(), StateFilter(None), Command('send'))
@@ -223,3 +249,4 @@ Active users: <code>{stats_dict['bots'][bot_id]['active']['month']}</code>, <cod
                             StateFilter(SendStates.wait_for_message))
         dp.callback_query.register(self.send_callback, IsAdmin(), UpdateUser(), IsPrivate(), F.data[:5] == 'send:')
         dp.message.register(self.send_url, IsAdmin(), UpdateUser(), IsPrivate(), StateFilter(SendStates.wait_for_url))
+        dp.message.register(self.dump_users_to_txt, IsAdmin(), UpdateUser(), IsPrivate(), Command('dump'))
