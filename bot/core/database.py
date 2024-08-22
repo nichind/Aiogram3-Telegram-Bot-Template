@@ -75,6 +75,7 @@ class User(Base):
         """Get all User objects from database"""
         session = Session()
         users = session.query(User).filter_by(**kwargs).all()
+        session.close()
         return users
 
     @classmethod
@@ -146,6 +147,7 @@ class Group(Base):
         """Get all Group objects from database"""
         session = Session()
         groups = session.query(Group).filter_by(**kwargs).all()
+        session.close()
         return groups
 
     @classmethod
