@@ -6,6 +6,9 @@ from aiogram.types import BotCommand
 from aiogram.fsm.storage.memory import MemoryStorage
 from .core import *
 from loguru import logger
+from glob import glob
+from os.path import dirname, basename, isfile, join, isdir
+from os import listdir
 import asyncio
 
 
@@ -23,8 +26,15 @@ async def create_dp(token: str):
     ])
 
     Admin(bot).setup(dp)
-    Messages(bot).setup(dp)
-    GroupMessages(bot).setup(dp)
+
+    for folder in listdir(dirname(__file__) + '/core'):
+        if isdir(dirname(__file__) + '/core/' + folder) and folder != '__pycache__':
+            module = glob(join(dirname(__file__) + '/core/' + folder, "*.py"))
+            __all__ = [basename(f)[:-3] for f in module if isfile(f) and not f.endswith('__init__.py')]
+            for file in __all__:
+                handler = __import__(f'bot.core.{folder}.{file}',
+                                     globals(), locals(), ['CurrentInst'], 0)
+                handler.CurrentInst(bot).setup(dp)
     # Callbacks(bot).setup(dp)
     # dp.setup_middleware(ThrottlingMiddleware())
     # dp.setup_middleware(IsSubbed())
