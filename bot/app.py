@@ -33,7 +33,7 @@ async def create_dp(token: str):
     Admin(bot).setup(dp)
 
     for folder in listdir(dirname(__file__) + '/core'):
-        if isdir(dirname(__file__) + '/core/' + folder) and folder not in ['__pycache__']:
+        if isdir(dirname(__file__) + '/core/' + folder) and folder not in ['__pycache__', 'utils']:
             module = glob(join(dirname(__file__) + '/core/' + folder, "*.py"))
             __all__ = [basename(f)[:-3] for f in module if isfile(f) and not f.endswith('__init__.py')]
             for file in __all__:

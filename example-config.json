@@ -10,5 +10,11 @@
       "name": "start",
       "description": "Starts the bot"
     }
-  ]
+  ],
+  "payments": {
+    "cryptobot": {
+      "api_key": "",
+      "network": ""
+    }
+  }
 }

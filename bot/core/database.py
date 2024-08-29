@@ -29,7 +29,7 @@ class User(Base):
     ref = Column(String, default=None)
     current_bot = Column(Integer)
     language = Column(String, default='en')
-    joined_at = Column(Float)
+    joined_at = Column(Integer)
     active_at = Column(Integer, default=0)
     edit_at = Column(Integer, default=0)
     is_admin = Column(Boolean, default=False)
@@ -100,7 +100,7 @@ class Group(Base):
     name = Column(String, default=None)
     link = Column(String, default=None)
     description = Column(String, default=None)
-    joined_at = Column(Float)
+    joined_at = Column(Integer)
     active_at = Column(Integer, default=0)
     edit_at = Column(Integer, default=0)
     current_bot = Column(Integer)
@@ -161,6 +161,67 @@ class Group(Base):
         session.commit()
         session.close()
         return await cls.get(group_id=group_id)
+
+
+class Invoice(Base):
+    __tablename__: str = 'invoices'
+
+    # Required fields - do not edit or something will break, you don't want it to happen, do you?
+
+    invoice_id = Column(Integer, primary_key=True)
+    identifier = Column(Integer)
+    provider = Column(String)
+    amount = Column(Float)
+    currency = Column(String, default=None)
+    pay_info = Column(String, default=None)
+    status = Column(String, default=None)
+    created_at = Column(Integer)
+    edit_at = Column(Integer, default=0)
+
+    @classmethod
+    async def add(cls, **kwargs) -> bool:
+        """Add Invoice object to database. Will fail if invoice with this id already exists. Returns True if invoice was added
+        """
+        session = Session()
+        invoice = session.query(Invoice).filter_by(invoice_id=kwargs['invoice_id']).first()
+        if invoice:
+            return False
+        invoice = Invoice(
+            invoice_id=len(await cls.get_all()) + 1,
+            **kwargs
+        )
+        session.add(invoice)
+        session.commit()
+        session.close()
+        return True
+
+    @classmethod
+    async def get(cls, **kwargs) -> Self:
+        """Get Invoice object from database"""
+        session = Session()
+        invoice = session.query(Invoice).filter_by(**kwargs).first()
+        session.close()
+        return invoice
+
+    @classmethod
+    async def get_all(cls, **kwargs) -> List[Self]:
+        """Get all Invoice objects from database"""
+        session = Session()
+        invoices = session.query(Invoice).filter_by(**kwargs).all()
+        session.close()
+        return invoices
+
+    @classmethod
+    async def update(cls, invoice_id, **kwargs) -> Self:
+        """Update Invoice object in database"""
+        session = Session()
+        invoice = session.query(Invoice).filter_by(invoice_id=invoice_id).first()
+        for key, value in kwargs.items():
+            setattr(invoice, key, value)
+        setattr(invoice, 'edit_at', time())
+        session.commit()
+        session.close()
+        return await cls.get(**kwargs)
 
 
 # Create tables

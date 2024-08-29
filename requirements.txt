@@ -2,3 +2,4 @@ aiogram
 sqlalchemy
 watchdog
 loguru
+pyeasypay
