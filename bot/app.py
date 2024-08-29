@@ -28,16 +28,16 @@ async def create_dp(token: str):
     Admin(bot).setup(dp)
 
     for folder in listdir(dirname(__file__) + '/core'):
-        if isdir(dirname(__file__) + '/core/' + folder) and folder != '__pycache__':
+        if isdir(dirname(__file__) + '/core/' + folder) and folder not in ['__pycache__']:
             module = glob(join(dirname(__file__) + '/core/' + folder, "*.py"))
             __all__ = [basename(f)[:-3] for f in module if isfile(f) and not f.endswith('__init__.py')]
             for file in __all__:
                 handler = __import__(f'bot.core.{folder}.{file}',
                                      globals(), locals(), ['CurrentInst'], 0)
-                handler.CurrentInst(bot).setup(dp)
-    # Callbacks(bot).setup(dp)
-    # dp.setup_middleware(ThrottlingMiddleware())
-    # dp.setup_middleware(IsSubbed())
+                try:
+                    handler.CurrentInst(bot).setup(dp)
+                except AttributeError:
+                    logger.error(f"Handler {folder}/{file} has no CurrentInst class or setup method in it, skipping it")
 
     logger.success(f"Created Dispatcher for @{(await bot.get_me()).username}, starting polling...")
     return dp.start_polling(bot)
