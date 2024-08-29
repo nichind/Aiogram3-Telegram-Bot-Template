@@ -4,5 +4,11 @@
   ],
   "admins": [
     133769420
+  ],
+  "commands": [
+    {
+      "name": "start",
+      "description": "Starts the bot"
+    }
   ]
 }

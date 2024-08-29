@@ -29,7 +29,9 @@ async def run_bots(bots: Bots()):
         return logger.error('Invalid config.json, please fix it and try again')
     except FileNotFoundError:
         logger.error('config.json not found, creating it for you...')
-        open('./config.json', 'w', encoding='utf-8').write('{\n\t"admins": [\n\t\t1337\n\t],\n\t"bots": [\n\t\t""\n\t]\n}')
+        (open('./config.json', 'w', encoding='utf-8')
+         .write('{\n\t"admins": [\n\t\t1337\n\t],\n\t"bots": [\n\t\t""\n\t],\n'
+                '\t"commands": [\n\t\t{\n\t\t\t"name": "start",\n\t\t\t"description": "Starts the bot"\n\t\t}\n\t]\n}'))
         return await run_bots(bots)
     for token in tokens:
         if token not in bots.running:

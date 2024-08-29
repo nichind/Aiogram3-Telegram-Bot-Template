@@ -5,6 +5,7 @@ from aiogram.enums import ParseMode
 from aiogram.types import BotCommand
 from aiogram.fsm.storage.memory import MemoryStorage
 from .core import *
+from json import load
 from loguru import logger
 from glob import glob
 from os.path import dirname, basename, isfile, join, isdir
@@ -13,6 +14,7 @@ import asyncio
 
 
 async def create_dp(token: str):
+    cfg = load(open('./config.json', 'r', encoding='utf-8'))
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
 
@@ -21,9 +23,12 @@ async def create_dp(token: str):
     except TokenValidationError:
         return logger.error(f"Invalid token: {token}")
     dp = Dispatcher(storage=MemoryStorage())
-    await bot.set_my_commands([
-        BotCommand(command='start', description='Start the bot.'),
-    ])
+    try:
+        await bot.set_my_commands(
+            [BotCommand(command=command['name'], description=command['description']) for command in cfg['commands']]
+        )
+    except Exception as exc:
+        logger.error(f'Failed to set bot commands: {exc}')
 
     Admin(bot).setup(dp)
 
