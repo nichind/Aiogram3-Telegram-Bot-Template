@@ -3,8 +3,8 @@ from aiogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKe
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import *
 from .filters import *
-from json import load
-from asyncio import run
+from json import load, dump
+from asyncio import run, sleep
 from aiogram.fsm.state import State, StatesGroup
 from aiogram import exceptions
 from io import BytesIO
@@ -30,7 +30,13 @@ class CurrentInst:
             "bots": {}
         }
 
-        bot_ids = [int(x.split(':')[0]) for x in load(open('./config.json', 'r', encoding='utf-8'))['bots']]
+        bots = load(open('./config.json', 'r', encoding='utf-8'))['bots']
+        bot_ids = []
+        for token in bots:
+            try:
+                bot_ids.append(int(token.split(':')[0]))
+            except ValueError:
+                pass
         for bot_id in bot_ids:
             stats_dict['bots'][bot_id] = {
                 "total": 0,
@@ -83,18 +89,24 @@ class CurrentInst:
                             stats_dict['new']['hour'] += 1
 
         stats_text = f"""
-Total users: <code>{stats_dict['total']}</code>, Blocked: <code>{stats_dict['blocked']}</code>
-New users: (Month, Week, Day, Hour)
-<code>{stats_dict['new']['month']}</code>, <code>{stats_dict['new']['week']}</code>, <code>{stats_dict['new']['day']}</code>, <code>{stats_dict['new']['hour']}</code>
-Active users: (Month, Week, Day, Hour)
-<code>{stats_dict['active']['month']}</code>, <code>{stats_dict['active']['week']}</code>, <code>{stats_dict['active']['day']}</code>, <code>{stats_dict['active']['hour']}</code>
+(Month, Week, Day, Hour)
+        
+🫂 <b>Total users:</b> <code>{stats_dict['total']}</code>, Blocked: <code>{stats_dict['blocked']}</code>
+👋 <b>Total new users:</b>: <code>{stats_dict['new']['month']}</code>, <code>{stats_dict['new']['week']}</code>, <code>{stats_dict['new']['day']}</code>, <code>{stats_dict['new']['hour']}</code>
+🗣️ <b>Total active users:</b> <code>{stats_dict['active']['month']}</code>, <code>{stats_dict['active']['week']}</code>, <code>{stats_dict['active']['day']}</code>, <code>{stats_dict['active']['hour']}</code>
 """
         for bot_id in bot_ids:
+            username = None
+            for _ in bots:
+                if _.startswith(str(bot_id)):
+                    bot = Bot(_)
+                    username = (await bot.get_me()).username + ' | '
+                    await bot.session.close()
             stats_text += f"""
-Bot: <code>{bot_id}</code>
-Total: <code>{stats_dict['bots'][bot_id]['total']}</code>, Blocked: <code>{stats_dict['bots'][bot_id]['blocked']}</code>
-New users: <code>{stats_dict['bots'][bot_id]['new']['month']}</code>, <code>{stats_dict['bots'][bot_id]['new']['week']}</code>, <code>{stats_dict['bots'][bot_id]['new']['day']}</code>, <code>{stats_dict['bots'][bot_id]['new']['hour']}</code>
-Active users: <code>{stats_dict['bots'][bot_id]['active']['month']}</code>, <code>{stats_dict['bots'][bot_id]['active']['week']}</code>, <code>{stats_dict['bots'][bot_id]['active']['day']}</code>, <code>{stats_dict['bots'][bot_id]['active']['hour']}</code>
+🤖 <b>Bot:</b> @{username if username else ''}<code>{bot_id}</code>
+🫂 <b>Users:</b> <code>{stats_dict['bots'][bot_id]['total']}</code>, Blocked: <code>{stats_dict['bots'][bot_id]['blocked']}</code>
+👋 <b>New users:</b> <code>{stats_dict['bots'][bot_id]['new']['month']}</code>, <code>{stats_dict['bots'][bot_id]['new']['week']}</code>, <code>{stats_dict['bots'][bot_id]['new']['day']}</code>, <code>{stats_dict['bots'][bot_id]['new']['hour']}</code>
+🗣️ <b>Active users:</b> <code>{stats_dict['bots'][bot_id]['active']['month']}</code>, <code>{stats_dict['bots'][bot_id]['active']['week']}</code>, <code>{stats_dict['bots'][bot_id]['active']['day']}</code>, <code>{stats_dict['bots'][bot_id]['active']['hour']}</code>
 """
         await self.bot.send_message(message.from_user.id, stats_text)
 
@@ -141,7 +153,10 @@ Active users: <code>{stats_dict['bots'][bot_id]['active']['month']}</code>, <cod
             with open('./config.json') as cfg:
                 tokens = load(cfg)['bots']
             for token in tokens:
-                bots[int(token.split(":")[0])] = Bot(token=token)
+                try:
+                    bots[int(token.split(":")[0])] = Bot(token=token)
+                except Exception as exc:
+                    print(exc)
 
             success = 0
             status_message = await self.bot.send_message(call.from_user.id, "Starting sending...", reply_to_message_id=copy.message_id)
@@ -225,7 +240,7 @@ Active users: <code>{stats_dict['bots'][bot_id]['active']['month']}</code>, <cod
         buffers = {}
         for x in ids:
             buffers[x] = BytesIO()
-            buffers[x].write(f"\n".encode('utf-8'))
+            buffers[x].write(f"".encode('utf-8'))
 
         # write users
         for user in users:
