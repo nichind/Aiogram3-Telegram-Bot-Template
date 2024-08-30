@@ -14,10 +14,13 @@ class CurrentInst:
 
     async def simple_command(self, message: types.Message, state: FSMContext):
         cfg = load(open('./config.json', 'r', encoding='utf-8'))
+        if 'simple_commands' not in cfg.keys():
+            return
         for command in cfg['simple_commands']:
             if message.text.replace('/', '') == command['name'].replace('/', ''):
-                if tr(message.from_user.language_code, command['answer']) != command['answer']:
-                    command['answer'] = tr(message.from_user.language_code, command['answer'])
+                user = await User.get(user_obj=message.from_user, user_id=message.from_user.id)
+                if tr(user.language, command['answer']) != command['answer']:
+                    command['answer'] = tr(user.language, command['answer'])
                 await message.delete()
                 if 'image' in command.keys() and command['image'] != "":
                     await self.bot.send_photo(message.chat.id, command['image'], command['answer'])
