@@ -15,7 +15,12 @@
     {
       "name": "hello",
       "answer": "Hello!",
-      "image": "https://nichind.dev/src/assets/aboutimg.png"
+      "image": ""
+    },
+    {
+      "name": "localized",
+      "answer": "TEXT_START",
+      "image": ""
     }
   ],
   "payments": {

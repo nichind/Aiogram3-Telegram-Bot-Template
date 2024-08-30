@@ -1,13 +1,9 @@
 from aiogram import types, Bot, Dispatcher, F
-from aiogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, BufferedInputFile
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import *
 from .filters import *
 from json import load, dump
-from asyncio import run, sleep
-from aiogram.fsm.state import State, StatesGroup
-from aiogram import exceptions
-from io import BytesIO
+from bot.core.translator import translate as tr
 
 
 class CurrentInst:
@@ -17,10 +13,11 @@ class CurrentInst:
         self.token = bot.token
 
     async def simple_command(self, message: types.Message, state: FSMContext):
-        print(message)
         cfg = load(open('./config.json', 'r', encoding='utf-8'))
         for command in cfg['simple_commands']:
             if message.text.replace('/', '') == command['name'].replace('/', ''):
+                if tr(message.from_user.language_code, command['answer']) != command['answer']:
+                    command['answer'] = tr(message.from_user.language_code, command['answer'])
                 await message.delete()
                 if 'image' in command.keys() and command['image'] != "":
                     await self.bot.send_photo(message.chat.id, command['image'], command['answer'])
