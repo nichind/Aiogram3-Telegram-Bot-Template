@@ -11,6 +11,13 @@
       "description": "Starts the bot"
     }
   ],
+  "simple_commands": [
+    {
+      "name": "hello",
+      "answer": "Hello!",
+      "image": "https://nichind.dev/src/assets/aboutimg.png"
+    }
+  ],
   "payments": {
     "cryptobot": {
       "api_key": "",

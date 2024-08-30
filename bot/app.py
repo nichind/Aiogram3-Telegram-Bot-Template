@@ -44,5 +44,7 @@ async def create_dp(token: str):
                 except AttributeError:
                     logger.error(f"Handler {folder}/{file} has no CurrentInst class or setup method in it, skipping it")
 
+    SimpleCommands(bot).setup(dp)
+
     logger.success(f"Created Dispatcher for @{(await bot.get_me()).username}, starting polling...")
     return dp.start_polling(bot)

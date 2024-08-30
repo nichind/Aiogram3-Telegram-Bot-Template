@@ -180,8 +180,8 @@ class Invoice(Base):
 
     @classmethod
     async def add(cls, **kwargs) -> bool:
-        """Add Invoice object to database. Will fail if invoice with this id already exists. Returns True if invoice was added
-        """
+        """Add Invoice object to database. Will fail if invoice with this id already exists.
+        Returns True if invoice was added"""
         session = Session()
         invoice = session.query(Invoice).filter_by(invoice_id=kwargs['invoice_id']).first()
         if invoice:

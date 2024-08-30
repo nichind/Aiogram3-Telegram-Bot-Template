@@ -252,8 +252,11 @@ class CurrentInst:
         # send file(s) to admin
         for buffer in buffers.keys():
             buffers[buffer].seek(0)
-            await self.bot.send_document(message.from_user.id, BufferedInputFile(buffers[buffer].read(),
-                                                                                 filename=f'users-{buffer}.txt'))
+            try:
+                await self.bot.send_document(message.from_user.id, BufferedInputFile(buffers[buffer].read(),
+                                                                                     filename=f'users-{buffer}.txt'))
+            except exceptions.TelegramBadRequest:
+                pass
             buffers[buffer].close()
 
     def setup(self, dp: Dispatcher):
