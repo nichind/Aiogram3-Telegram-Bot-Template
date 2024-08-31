@@ -69,6 +69,7 @@ class ChangeConfigHandler(FileSystemEventHandler):
 
 
 if __name__ == '__main__':
+    logger.add("./logs/{time:YYYY}-{time:MM}-{time:DD}.log", rotation="00:00", level="INFO")
     bots = Bots()
     event_handler = ChangeConfigHandler(bots)
     observer = Observer()

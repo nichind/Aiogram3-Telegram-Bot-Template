@@ -1,5 +1,4 @@
 from aiogram.filters import Filter
-from aiogram import types, Bot
 from .database import *
 from json import load
 from time import time

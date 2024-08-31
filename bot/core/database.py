@@ -4,6 +4,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from time import time
 from typing import Self, List
+from loguru import logger
 
 # Feel free to change this to postgresql or any other database.
 engine = create_engine('sqlite:///./bot.sqlite?check_same_thread=False', pool_size=20, max_overflow=50)
@@ -39,6 +40,9 @@ class User(Base):
 
     balance_usd = Column(Float, default=0.0)
 
+    def __repr__(self):
+        return f'User({self.user_id}, {self.username})'
+
     @classmethod
     async def add(cls, user_obj: types.User, **kwargs) -> bool:
         """Add User object to database. Will fail if user with this id already exists. Returns True if user was added"""
@@ -57,6 +61,7 @@ class User(Base):
         )
         session.add(user)
         session.commit()
+        logger.info(f'{user} added to database')
         session.close()
         return True
 
@@ -67,6 +72,7 @@ class User(Base):
             await cls.add(user_obj)
         session = Session()
         user = session.query(User).filter_by(user_id=user_id, **kwargs).first()
+        logger.info(f'{user} got from database')
         session.close()
         return user
 
@@ -75,6 +81,7 @@ class User(Base):
         """Get all User objects from database"""
         session = Session()
         users = session.query(User).filter_by(**kwargs).all()
+        logger.info(f'{users} got from database')
         session.close()
         return users
 
@@ -87,6 +94,7 @@ class User(Base):
             setattr(user, key, value)
         setattr(user, 'edit_at', time())
         session.commit()
+        logger.info(f'{user} updated in database with {kwargs}')
         session.close()
         return await cls.get(user_id=user_id)
 
@@ -110,6 +118,9 @@ class Group(Base):
 
     # Optional fields - feel free to add more fields or remove if you don't need them
 
+    def __repr__(self):
+        return f'Group({self.group_id}, {self.name})'
+
     @classmethod
     async def add(cls, group_obj: types.Chat, **kwargs) -> bool:
         """Add Group object to database. Will fail if group with this id already exists. Returns True if group was added
@@ -127,8 +138,8 @@ class Group(Base):
             **kwargs
         )
         session.add(group)
-
         session.commit()
+        logger.info(f'{group} added to database')
         session.close()
         return True
 
@@ -139,6 +150,7 @@ class Group(Base):
             await cls.add(group_obj)
         session = Session()
         group = session.query(Group).filter_by(group_id=group_id, **kwargs).first()
+        logger.info(f'{group} got from database')
         session.close()
         return group
 
@@ -147,6 +159,7 @@ class Group(Base):
         """Get all Group objects from database"""
         session = Session()
         groups = session.query(Group).filter_by(**kwargs).all()
+        logger.info(f'{groups} got from database')
         session.close()
         return groups
 
@@ -159,6 +172,7 @@ class Group(Base):
             setattr(group, key, value)
         setattr(group, 'edit_at', time())
         session.commit()
+        logger.info(f'{group} updated in database with {kwargs}')
         session.close()
         return await cls.get(group_id=group_id)
 
@@ -178,6 +192,9 @@ class Invoice(Base):
     created_at = Column(Integer)
     edit_at = Column(Integer, default=0)
 
+    def __repr__(self):
+        return f'Invoice({self.invoice_id}, {self.identifier}, {self.provider}, {self.amount}, {self.currency})'
+
     @classmethod
     async def add(cls, **kwargs) -> bool:
         """Add Invoice object to database. Will fail if invoice with this id already exists.
@@ -192,6 +209,7 @@ class Invoice(Base):
         )
         session.add(invoice)
         session.commit()
+        logger.info(f'{invoice} added to database')
         session.close()
         return True
 
@@ -200,6 +218,7 @@ class Invoice(Base):
         """Get Invoice object from database"""
         session = Session()
         invoice = session.query(Invoice).filter_by(**kwargs).first()
+        logger.info(f'{invoice} got from database')
         session.close()
         return invoice
 
@@ -208,6 +227,7 @@ class Invoice(Base):
         """Get all Invoice objects from database"""
         session = Session()
         invoices = session.query(Invoice).filter_by(**kwargs).all()
+        logger.info(f'{invoices} got from database')
         session.close()
         return invoices
 
@@ -220,6 +240,7 @@ class Invoice(Base):
             setattr(invoice, key, value)
         setattr(invoice, 'edit_at', time())
         session.commit()
+        logger.info(f'{invoice} updated in database with {kwargs}')
         session.close()
         return await cls.get(**kwargs)
 

@@ -22,6 +22,9 @@ async def create_dp(token: str):
         bot = Bot(token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     except TokenValidationError:
         return logger.error(f"Invalid token: {token}")
+
+    bot.logger = logger  # not really necessary, but why not? :D
+
     dp = Dispatcher(storage=MemoryStorage())
     try:
         await bot.set_my_commands(

@@ -23,9 +23,12 @@ class CurrentInst:
                     command['answer'] = tr(user.language, command['answer'])
                 await message.delete()
                 if 'image' in command.keys() and command['image'] != "":
-                    await self.bot.send_photo(message.chat.id, command['image'], command['answer'])
-                else:
-                    await self.bot.send_message(message.chat.id, command['answer'])
+                    try:
+                        await self.bot.send_photo(message.chat.id, command['image'], command['answer'])
+                        break
+                    except:
+                        pass
+                await self.bot.send_message(message.chat.id, command['answer'])
                 break
 
     def setup(self, dp: Dispatcher):
