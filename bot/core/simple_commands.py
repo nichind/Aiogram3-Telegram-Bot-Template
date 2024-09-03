@@ -32,4 +32,4 @@ class CurrentInst:
                 break
 
     def setup(self, dp: Dispatcher):
-        dp.message.register(self.simple_command, UpdateUser(), StateFilter(None))
+        dp.message.register(self.simple_command, StateFilter(None))

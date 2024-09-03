@@ -18,4 +18,4 @@ class CurrentInst:
         await self.bot.send_message(message.chat.id, tr(user.language, "TEXT_START"))
 
     def setup(self, dp: Dispatcher):
-        dp.message.register(self.start, UpdateUser(), IsPrivate(), Command('start'))
+        dp.message.register(self.start, IsPrivate(), Command('start'))

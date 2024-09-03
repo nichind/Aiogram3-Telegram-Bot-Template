@@ -19,4 +19,4 @@ class CurrentInst:
                                     reply_to_message_id=message.message_id)
 
     def setup(self, dp: Dispatcher):
-        dp.message.register(self.start, UpdateUser(), IsGroup(), UpdateGroup(), Command('start'))
+        dp.message.register(self.start, IsGroup(), UpdateGroup(), Command('start'))

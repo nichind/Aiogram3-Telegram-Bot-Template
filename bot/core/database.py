@@ -72,7 +72,7 @@ class User(Base):
             await cls.add(user_obj)
         session = Session()
         user = session.query(User).filter_by(user_id=user_id, **kwargs).first()
-        logger.info(f'{user} got from database')
+        # logger.info(f'{user} got from database')
         session.close()
         return user
 

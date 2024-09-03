@@ -260,10 +260,10 @@ class CurrentInst:
             buffers[buffer].close()
 
     def setup(self, dp: Dispatcher):
-        dp.message.register(self.stats, IsAdmin(), UpdateUser(), IsPrivate(), StateFilter(None), Command('stats'))
-        dp.message.register(self.send, IsAdmin(), UpdateUser(), IsPrivate(), StateFilter(None), Command('send'))
-        dp.message.register(self.send_message, IsAdmin(), UpdateUser(), IsPrivate(),
+        dp.message.register(self.stats, UpdateUser(), IsAdmin(), IsPrivate(), StateFilter(None), Command('stats'))
+        dp.message.register(self.send, IsAdmin(), IsPrivate(), StateFilter(None), Command('send'))
+        dp.message.register(self.send_message, IsAdmin(), IsPrivate(),
                             StateFilter(SendStates.wait_for_message))
-        dp.callback_query.register(self.send_callback, IsAdmin(), UpdateUser(), F.data[:5] == 'send:')
-        dp.message.register(self.send_url, IsAdmin(), UpdateUser(), IsPrivate(), StateFilter(SendStates.wait_for_url))
-        dp.message.register(self.dump_users_to_txt, IsAdmin(), UpdateUser(), IsPrivate(), Command('dump'))
+        dp.callback_query.register(self.send_callback, IsAdmin(), F.data[:5] == 'send:')
+        dp.message.register(self.send_url, IsAdmin(), IsPrivate(), StateFilter(SendStates.wait_for_url))
+        dp.message.register(self.dump_users_to_txt, IsAdmin(), IsPrivate(), Command('dump'))
