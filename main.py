@@ -1,4 +1,5 @@
-from asyncio import run, sleep, create_task, gather
+import asyncio
+from asyncio import run, sleep, create_task, gather, Task
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from time import time
@@ -65,7 +66,7 @@ class ChangeConfigHandler(FileSystemEventHandler):
             self.last_edit = time()
             logger.info('Config file was changed, searching for new bots and starting them')
             Thread(target=run, args=(run_bots(self.bots),)).start()
-            return
+        return
 
 
 if __name__ == '__main__':

@@ -150,7 +150,7 @@ class Group(Base):
             await cls.add(group_obj)
         session = Session()
         group = session.query(Group).filter_by(group_id=group_id, **kwargs).first()
-        logger.info(f'{group} got from database')
+        # logger.info(f'{group} got from database')
         session.close()
         return group
 
@@ -179,8 +179,6 @@ class Group(Base):
 
 class Invoice(Base):
     __tablename__: str = 'invoices'
-
-    # Required fields - do not edit or something will break, you don't want it to happen, do you?
 
     invoice_id = Column(Integer, primary_key=True)
     identifier = Column(Integer)

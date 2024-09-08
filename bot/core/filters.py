@@ -2,6 +2,7 @@ from aiogram.filters import Filter
 from .database import *
 from json import load
 from time import time
+from loguru import logger
 
 
 class IsAdmin(Filter):
@@ -51,6 +52,8 @@ class UpdateUser(Filter):
             language=action.from_user.language_code, active_at=time(),
             blocked_bot=False
         )
+        logger.info(f'{user} got {"Message" if isinstance(action, types.Message) else "Callback"}: '
+                    f'"{action.text if action.text else action.data}"')
         return True
 
 

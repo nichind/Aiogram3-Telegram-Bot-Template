@@ -12,7 +12,7 @@ class CurrentInst:
         self.bot_id = bot.id
         self.token = bot.token
 
-    async def start(self, message: types.Message, state: FSMContext):
+    async def start(self, message: Message, state: FSMContext):
         user = await User.get(user_obj=message.from_user, user_id=message.from_user.id)
         await message.delete()
         await self.bot.send_message(message.chat.id, tr(user.language, "TEXT_START"))
