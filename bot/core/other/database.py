@@ -45,11 +45,12 @@ class User(Base):
     @classmethod
     async def add(cls, **kwargs) -> bool:
         async with async_session() as session:
-            user = User(
-                **kwargs
-            )
-            session.add(user)
-            await session.commit()
+            if (await session.execute(select(User).filter_by(**kwargs))).scalar() is None:
+                user = User(
+                    **kwargs
+                )
+                session.add(user)
+                await session.commit()
         return await cls.get(user_id=user.user_id)
 
     @classmethod
@@ -73,7 +74,7 @@ class User(Base):
             for key, value in kwargs.items():
                 setattr(user, key, value)
             await session.commit()
-        return user
+        return await cls.get(user_id=user_id)
     
 
 async def create_tables():

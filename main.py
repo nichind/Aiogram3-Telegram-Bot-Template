@@ -1,12 +1,12 @@
 import asyncio
-from asyncio import run, sleep, create_task, gather, Task
+from asyncio import run, sleep, create_task, gather, Task, new_event_loop
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from time import time
 from json import load, decoder
 from bot import create_dp
 from loguru import logger
-from threading import Thread
+
 
 print(f'\n\n{"="*90}')
 print(f'Bot Template made by @nichind, https://github.com/nichind/Aiogram3-Telegram-Bot-Template')
@@ -65,7 +65,7 @@ class ChangeConfigHandler(FileSystemEventHandler):
                 return
             self.last_edit = time()
             logger.info('Config file was changed, searching for new bots and starting them')
-            Thread(target=run, args=(run_bots(self.bots),)).start()
+            new_event_loop().run_until_complete(run_bots(self.bots))
         return
 
 

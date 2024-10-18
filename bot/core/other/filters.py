@@ -1,7 +1,7 @@
 from aiogram.filters import Filter
 from .database import *
 from json import load
-from time import time
+from datetime import datetime
 from loguru import logger
 
 
@@ -49,7 +49,7 @@ class UpdateUser(Filter):
         await User.update(
             user.user_id, current_bot=int(action.bot.token.split(':')[0]), name=action.from_user.full_name,
             username=action.from_user.username, is_premium=action.from_user.is_premium,
-            language=action.from_user.language_code, active_at=time(),
+            language=action.from_user.language_code, active_at=datetime.now(),
             is_blocked=False
         )
         logger.info(f'{user} got {"Message" if isinstance(action, types.Message) else "Callback"}: '
