@@ -4,6 +4,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.types import BotCommand
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.exceptions import *
 from .core import *
 from json import load
 from loguru import logger
@@ -45,6 +46,10 @@ async def create_dp(token: str):
                     handler.CurrentInst(bot).setup(dp)
                 except AttributeError:
                     logger.error(f"Handler {folder}/{file} has no CurrentInst class or setup method in it, skipping it")
-
-    logger.success(f"Created Dispatcher for @{(await bot.get_me()).username}, starting polling...")
+    try:
+        logger.success(f"Created Dispatcher for @{(await bot.get_me()).username}, starting polling...")
+    except TelegramUnauthorizedError:
+        logger.error(f"Invalid token: {token}")
+        await bot.session.close()
+        return
     return dp.start_polling(bot)

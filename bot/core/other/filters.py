@@ -53,7 +53,7 @@ class UpdateUser(Filter):
             is_blocked=False
         )
         logger.info(f'{user} got {"Message" if isinstance(action, types.Message) else "Callback"}: '
-                    f'"{action.text if action.text else action.data}"')
+                    f'"{(action.text if action.text else action.data)[:50]}"')
         return True
 
 

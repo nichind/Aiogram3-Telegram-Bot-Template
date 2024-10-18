@@ -1,7 +1,8 @@
 config.json
-bot.sqlite
+*.sqlite
 settings.json
 logs/
+backups/
 
 # Workspace
 .idea

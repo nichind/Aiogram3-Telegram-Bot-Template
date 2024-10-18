@@ -8,11 +8,51 @@ from asyncio import create_task, get_event_loop, new_event_loop
 from time import time
 from typing import Self, List
 from loguru import logger
+from dotenv import load_dotenv
+from datetime import datetime
+from cryptography.fernet import Fernet
+import os
 
-# Feel free to change this to postgresql or any other database.
+
+db_backup_folder = './backups/'
 engine = create_async_engine('sqlite+aiosqlite:///./bot.sqlite?check_same_thread=False')
 async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 Base = declarative_base()
+
+
+class DatabaseBackups:
+    def __init__(self):
+        pass
+    
+    @classmethod
+    async def backup_db(self):        
+        load_dotenv()
+        CRYPT_KEY = os.getenv('DB_CRYPT_KEY')
+        if not os.path.exists(db_backup_folder):
+            os.mkdir(db_backup_folder)
+        files = os.listdir(db_backup_folder)
+        if len(files) > 4:
+            files.sort()
+            for f in files[:-4]:
+                os.remove(db_backup_folder + f)
+        with open('./bot.sqlite', 'rb') as f:
+            name = f'crypted_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.txt'
+            with open(db_backup_folder + name, 'wb') as f2:
+                f2.write(Fernet(CRYPT_KEY.encode('utf-8')).encrypt(f.read()))
+        return name
+
+    @classmethod
+    async def decrypt_db(self, replace_existing: bool = False):
+        load_dotenv()
+        CRYPT_KEY = os.getenv('DB_CRYPT_KEY')
+        files = os.listdir(db_backup_folder)
+        if len(files) == 0:
+            return
+        files.sort()
+        with open(db_backup_folder + files[-1], 'rb') as f:
+            with open('./bot.sqlite' if replace_existing else './decrypted_bot.sqlite', 'wb') as f2:
+                f2.write(Fernet(CRYPT_KEY.encode('utf-8')).decrypt(f.read()))
+        return files[-1]
 
 
 class User(Base):

@@ -4,3 +4,5 @@ watchdog
 loguru
 pyeasypay
 aiosqlite
+cryptography
+python-jose[cryptography]
