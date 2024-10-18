@@ -38,7 +38,7 @@ Make sure you have python that supports aiogram3 installed. (3.9+)
 
 ## Screenshots
 
-![Example start](other/showcase1.png)
+![Example start](assets/showcase1.png)
 
 
 PRs are welcomed
