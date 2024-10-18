@@ -123,7 +123,7 @@ if __name__ == '__main__':
     
     elif 'restore' in sys.argv:
         replace_existing = 'replace' in sys.argv or input('Replace existing database? (y/n) ') == 'y'
-        filename = new_event_loop().run_until_complete(DatabaseBackups.decrypt_db(replace_existing))
+        filename = new_event_loop().run_until_complete(DatabaseBackups.decrypt_db(replace_existing and input('Replacing means currently existing database will be gone. Are you sure? (y/n) ') == 'y'))
         logger.success(f'Database was restored from {db_backup_folder}{filename}')
         logger.info('Start the bots? (y/n)')
         if input("> ") != 'y':
