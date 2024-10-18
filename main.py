@@ -22,7 +22,7 @@ class Bots:
         self.running = []
 
 
-async def run_bots(bots: Bots()):
+async def run_bots(bots: Bots = Bots()):
     tasks = []
     try:
         tokens = load(open('./config.json', 'r', encoding='utf-8'))['bots']
@@ -52,7 +52,7 @@ async def run_bots(bots: Bots()):
 
 
 class ChangeConfigHandler(FileSystemEventHandler):
-    def __init__(self, running_bots: Bots()):
+    def __init__(self, running_bots: Bots = Bots()):
         self.last_edit = 0
         self.bots = running_bots
 

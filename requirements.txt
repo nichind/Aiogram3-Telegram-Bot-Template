@@ -1,5 +1,6 @@
 aiogram
-sqlalchemy
+sqlalchemy[asyncio]
 watchdog
 loguru
 pyeasypay
+aiosqlite

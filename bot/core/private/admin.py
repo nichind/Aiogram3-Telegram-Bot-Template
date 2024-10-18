@@ -2,7 +2,7 @@ from aiogram import types, Bot, Dispatcher, F
 from aiogram.types import Message, CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, BufferedInputFile
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import *
-from .filters import *
+from ..other.filters import *
 from json import load, dump
 from asyncio import run, sleep
 from aiogram.fsm.state import State, StatesGroup

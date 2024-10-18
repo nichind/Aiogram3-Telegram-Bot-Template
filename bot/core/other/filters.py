@@ -13,7 +13,7 @@ class IsAdmin(Filter):
     async def __call__(self, action: types.Message | types.CallbackQuery) -> bool:
         with open('./config.json') as cfg:
             admins = load(cfg)['admins']
-        user = await User.get(user_obj=action.from_user, user_id=action.from_user.id)
+        user = await User.get(user_id=action.from_user.id)
         if user.user_id in admins and not user.is_admin:
             await User.update(user.user_id, is_admin=True)
         elif user.is_admin and user.user_id not in admins:
@@ -45,12 +45,12 @@ class UpdateUser(Filter):
         pass
 
     async def __call__(self, action: types.Message | types.CallbackQuery) -> bool:
-        user = await User.get(user_obj=action.from_user, user_id=action.from_user.id)
+        user = await User.get(user_id=action.from_user.id)
         await User.update(
             user.user_id, current_bot=int(action.bot.token.split(':')[0]), name=action.from_user.full_name,
             username=action.from_user.username, is_premium=action.from_user.is_premium,
             language=action.from_user.language_code, active_at=time(),
-            blocked_bot=False
+            is_blocked=False
         )
         logger.info(f'{user} got {"Message" if isinstance(action, types.Message) else "Callback"}: '
                     f'"{action.text if action.text else action.data}"')
@@ -63,11 +63,11 @@ class UpdateGroup(Filter):
         pass
 
     async def __call__(self, action: types.Message | types.CallbackQuery) -> bool:
-        group = await Group.get(group_obj=action.chat, group_id=action.chat.id)
-        await Group.update(
-            group.group_id, current_bot=int(action.bot.token.split(':')[0]), name=action.chat.title,
-            link=action.chat.invite_link, active_at=time(), blocked_bot=False,
-            members_count=await action.bot.get_chat_member_count(action.chat.id),
-            description=action.chat.description, is_forum=action.chat.is_forum,
-        )
+        # group = await Group.get(group_obj=action.chat, group_id=action.chat.id)
+        # await Group.update(
+        #     group.group_id, current_bot=int(action.bot.token.split(':')[0]), name=action.chat.title,
+        #     link=action.chat.invite_link, active_at=time(), blocked_bot=False,
+        #     members_count=await action.bot.get_chat_member_count(action.chat.id),
+        #     description=action.chat.description, is_forum=action.chat.is_forum,
+        # )
         return True
