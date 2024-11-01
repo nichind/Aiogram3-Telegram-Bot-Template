@@ -59,25 +59,25 @@ class User(Base):
     __tablename__: str = 'users'
 
     user_id = Column(Integer, primary_key=True, unique=True)
-    username = Column(String, default=None)
-    name = Column(String, default=None)
+    username = Column(String)
+    name = Column(String)
     
-    is_premium = Column(Boolean, default=None)
-    access = Column(Boolean, default=None)
-    ref = Column(String, default=None)
+    is_premium = Column(Boolean)
+    access = Column(Boolean)
+    ref = Column(String)
     
-    current_bot = Column(Integer, default=None)
+    current_bot = Column(Integer)
     
-    language = Column(String, default=None)
+    language = Column(String)
     
     created_at = Column(DateTime(timezone=True), default=func.now())
     active_at = Column(DateTime(timezone=True), default=func.now())
     updated_at = Column(DateTime(timezone=True), default=func.now(), onupdate=func.now())
     
-    is_admin = Column(Boolean, default=None)
-    is_deleted = Column(Boolean, default=None)
+    is_admin = Column(Boolean)
+    is_deleted = Column(Boolean)
     
-    data = Column(JSON, default=None)
+    data = Column(JSON)
 
     def __repr__(self):
         return f'User({self.user_id}, {self.username})'

@@ -1,4 +1,7 @@
-def translate(locale: str = "en", context: str = "") -> str | None:
+from os import getcwd
+
+
+def translate(locale: str = "en", context: str = "") -> str:
     """
     Project translator.
 
@@ -8,13 +11,15 @@ def translate(locale: str = "en", context: str = "") -> str | None:
     Returns translated line or context, if line wasn't found in selected and english locale.
     """
     def get(loc):
-        with open(f'./locales/{loc}.txt', 'r', encoding='UTF-8') as f:
-            for line in f.readlines():
-                if line[:line.index('=')] == context:
-                    return line[line.index('=')+1:].replace('\\n', '\n')[:-2 if line[-2:] == '\n' else 0]
+        with open(f'{getcwd()}/locales/{loc}.txt', 'r', encoding='UTF-8') as f:
+            for line in locale.readlines():
+                if '=' in line and line.split('=')[0].strip().upper() == context.upper():
+                    return line[line.index('=') + 1:].replace('\\n', '\n').replace('\\t', '\t')
             raise FileNotFoundError
 
     try:
+        if locale is None:
+            locale = 'en'
         return get(locale)
     except FileNotFoundError:
         try:

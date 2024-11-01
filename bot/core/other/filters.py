@@ -46,12 +46,18 @@ class UpdateUser(Filter):
 
     async def __call__(self, action: types.Message | types.CallbackQuery) -> bool:
         user = await User.get(user_id=action.from_user.id)
-        await User.update(
-            user.user_id, current_bot=int(action.bot.token.split(':')[0]), name=action.from_user.full_name,
-            username=action.from_user.username, is_premium=action.from_user.is_premium,
-            language=action.from_user.language_code, active_at=datetime.now(),
-            is_blocked=False
-        )
+        if user is None:
+            await User.add(user_id=action.from_user.id, name=action.from_user.full_name,
+                           username=action.from_user.username, is_premium=action.from_user.is_premium,
+                           language=action.from_user.language_code, active_at=datetime.now(),
+                           is_blocked=False)
+        else:
+            await User.update(
+                user.user_id, current_bot=int(action.bot.token.split(':')[0]), name=action.from_user.full_name,
+                username=action.from_user.username, is_premium=action.from_user.is_premium,
+                language=action.from_user.language_code, active_at=datetime.now(),
+                is_blocked=False
+            )
         logger.info(f'{user} got {"Message" if isinstance(action, types.Message) else "Callback"}: '
                     f'"{(action.text if action.text else action.data)[:50]}"')
         return True

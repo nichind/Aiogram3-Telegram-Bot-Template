@@ -1,2 +1,1 @@
 TEXT_START=Welcome to the example bot made by @nichindpf, https://github.com/nichind/Aiogram3-Telegram-Bot-Template
-IMG_MENU=

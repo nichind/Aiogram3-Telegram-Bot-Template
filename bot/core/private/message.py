@@ -15,7 +15,7 @@ class CurrentInst:
     async def start(self, message: Message, state: FSMContext):
         user = await User.get(user_id=message.from_user.id)
         await message.delete()
-        await self.bot.send_message(message.chat.id, self.bot.tr(user.language, "TEXT_START"))
+        await message.answer(text=self.bot.tr(user.language, "TEXT_START"))
 
     def setup(self, dp: Dispatcher):
         dp.message.register(self.start, IsPrivate(), Command('start'))
